@@ -47,8 +47,8 @@ The first RAG query downloads Chroma's small embedding model (~80 MB) once. Add 
 
 - How many leads are in the Qualified stage?
 - What is the total expected revenue by salesperson?
-- Show me draft quotations for Azure Interior.
-- Give me a profile of Deco Addict.
+- Show me draft quotations for Ready Mat.
+- Give me a profile of Gemini Furniture.
 - Who has to approve a 700 EUR refund?
 - How many leads are Qualified, and what is that stage's default win probability? *(data + docs)*
 

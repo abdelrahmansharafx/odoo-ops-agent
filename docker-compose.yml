@@ -25,7 +25,7 @@ services:
       PASSWORD: odoo
     command: >
       odoo -d odoo -i base,contacts,crm,sale_management
-      --stop-after-init --without-demo=False
+      --stop-after-init
     volumes:
       - odoo-data:/var/lib/odoo
     restart: "no"
