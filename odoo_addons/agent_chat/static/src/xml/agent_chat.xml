@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="agent_chat.AgentChat">
+        <div class="o_agent_chat">
+            <button class="o_agent_chat_toggle btn btn-link" t-on-click="toggle" title="Ask the business agent">
+                <i class="fa fa-comments"/>
+            </button>
+            <div t-if="state.open" class="o_agent_chat_panel shadow">
+                <div class="o_agent_chat_header">Business agent</div>
+                <div class="o_agent_chat_list" t-ref="list">
+                    <div t-if="!state.messages.length" class="o_agent_chat_hint">
+                        Ask about leads, pipeline, orders, customers or internal processes.
+                    </div>
+                    <div t-foreach="state.messages" t-as="m" t-key="m_index"
+                         t-attf-class="o_agent_chat_msg o_agent_chat_#{m.role}">
+                        <div t-esc="m.text"/>
+                        <small t-if="m.meta" class="o_agent_chat_meta" t-esc="m.meta"/>
+                    </div>
+                    <div t-if="state.busy" class="o_agent_chat_msg o_agent_chat_agent">Thinking…</div>
+                </div>
+                <textarea class="o_agent_chat_input form-control" rows="2"
+                          placeholder="e.g. How many leads are Qualified?"
+                          t-model="state.input" t-on-keydown="onKeydown" t-att-disabled="state.busy"/>
+            </div>
+        </div>
+    </t>
+</templates>

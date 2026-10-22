@@ -1,0 +1,29 @@
+.o_agent_chat {
+    position: relative;
+
+    .o_agent_chat_toggle { color: inherit; font-size: 1.2rem; }
+
+    .o_agent_chat_panel {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 380px;
+        max-width: 95vw;
+        background: white;
+        color: #212529;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        z-index: 1100;
+        display: flex;
+        flex-direction: column;
+    }
+    .o_agent_chat_header { padding: 8px 12px; font-weight: 600; border-bottom: 1px solid #dee2e6; }
+    .o_agent_chat_list { height: 340px; overflow-y: auto; padding: 8px 12px; }
+    .o_agent_chat_hint { color: #6c757d; font-size: .9rem; }
+    .o_agent_chat_msg { margin: 6px 0; padding: 6px 10px; border-radius: 8px; white-space: pre-wrap; }
+    .o_agent_chat_user { background: #e7f1ff; margin-left: 30px; }
+    .o_agent_chat_agent { background: #f1f3f5; margin-right: 30px; }
+    .o_agent_chat_error { background: #fdecea; color: #a12622; }
+    .o_agent_chat_meta { display: block; color: #6c757d; margin-top: 2px; }
+    .o_agent_chat_input { border-radius: 0 0 6px 6px; border-width: 1px 0 0; resize: none; }
+}

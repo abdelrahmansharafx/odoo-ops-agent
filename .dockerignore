@@ -1,0 +1,7 @@
+.venv
+.git
+.env
+.chroma
+evals
+tests
+__pycache__

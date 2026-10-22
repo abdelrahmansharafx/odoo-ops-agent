@@ -13,6 +13,21 @@ services:
       interval: 5s
       retries: 10
 
+  # The LangGraph agent behind a small HTTP API; the Odoo chat addon calls it server-side.
+  agent:
+    build: .
+    env_file: .env
+    environment:
+      ODOO_URL: http://odoo:8069   # container-to-container address (overrides .env)
+      ODOO_DB: odoo
+    depends_on:
+      - odoo
+    ports:
+      - "8000:8000"
+    volumes:
+      - agent-cache:/root/.cache   # Chroma's embedding model, downloaded once
+    restart: unless-stopped
+
   # One-shot: creates the "odoo" database and installs modules WITH demo data, then exits.
   odoo-init:
     image: odoo:17.0
@@ -24,10 +39,11 @@ services:
       USER: odoo
       PASSWORD: odoo
     command: >
-      odoo -d odoo -i base,contacts,crm,sale_management
+      odoo -d odoo -i base,contacts,crm,sale_management,agent_chat
       --stop-after-init
     volumes:
       - odoo-data:/var/lib/odoo
+      - ./odoo_addons:/mnt/extra-addons:ro
     restart: "no"
 
   odoo:
@@ -41,7 +57,9 @@ services:
     command: odoo -d odoo --db-filter=^odoo$$
     volumes:
       - odoo-data:/var/lib/odoo
+      - ./odoo_addons:/mnt/extra-addons:ro
 
 volumes:
   pgdata:
   odoo-data:
+  agent-cache:
