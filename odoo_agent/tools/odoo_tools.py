@@ -6,7 +6,7 @@ from typing import Literal, Optional
 
 from langchain_core.tools import tool
 
-from .odoo_client import OdooClient
+from ..odoo.client import OdooClient
 
 MAX_ROWS = 25
 

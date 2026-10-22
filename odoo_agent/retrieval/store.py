@@ -1,14 +1,13 @@
-"""Local RAG over the markdown business-process docs (Chroma, persisted on disk)."""
+"""Chunking and Chroma search over the markdown business-process docs (persisted on disk)."""
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
 import chromadb
-from langchain_core.tools import tool
 
-ROOT = Path(__file__).resolve().parent.parent
-DOCS_DIR = ROOT / "docs"
+ROOT = Path(__file__).resolve().parent.parent.parent
+DOCS_DIR = ROOT / "knowledge"
 PERSIST_DIR = ROOT / ".chroma"
 TOP_K = 3
 
@@ -35,7 +34,7 @@ class DocStore:
         self.reindex()
 
     def reindex(self) -> int:
-        """Rebuild the collection from disk so edits to /docs are always picked up."""
+        """Rebuild the collection from disk so edits to /knowledge are always picked up."""
         existing = self._col.get()["ids"]
         if existing:
             self._col.delete(ids=existing)
@@ -56,31 +55,3 @@ class DocStore:
             for d, m in zip(res["documents"][0], res["metadatas"][0])
         ]
 
-
-_store: DocStore | None = None
-
-
-def set_store(store: DocStore | None) -> None:
-    global _store
-    _store = store
-
-
-def get_store() -> DocStore:
-    global _store
-    if _store is None:
-        _store = DocStore()
-    return _store
-
-
-@tool
-def search_process_docs(query: str) -> list[dict]:
-    """Search internal business-process documentation (policies and procedures).
-
-    Use for "how/what is the policy/process" questions: lead routing, sales stages,
-    refunds, discount approvals, quotation-to-order steps, customer data handling.
-    Does NOT contain live CRM or sales data. Returns the top matching passages with their source file.
-
-    Args:
-        query: Natural-language description of what to look up.
-    """
-    return get_store().search(query)

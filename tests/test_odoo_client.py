@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from odoo_agent.odoo_client import OdooClient, OdooError
+from odoo_agent.odoo.client import OdooClient, OdooError
 
 
 @pytest.fixture

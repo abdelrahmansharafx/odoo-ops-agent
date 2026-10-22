@@ -1,7 +1,7 @@
 from langchain_core.messages import AIMessage
 from langchain_core.tools import tool
 
-from odoo_agent.agent import ask
+from odoo_agent.graph import ask
 
 
 class ScriptedLLM:
@@ -38,7 +38,7 @@ def boom() -> dict:
 
 
 def test_tool_then_answer(monkeypatch):
-    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [echo])
+    monkeypatch.setattr("odoo_agent.graph.ALL_TOOLS", [echo])
     llm = ScriptedLLM([ai(calls=[("echo", {"x": 3})]), ai("The answer is 3")])
     r = ask("q", llm=llm)
     assert r.answer == "The answer is 3"
@@ -47,13 +47,13 @@ def test_tool_then_answer(monkeypatch):
 
 
 def test_no_tool_direct_answer(monkeypatch):
-    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [echo])
+    monkeypatch.setattr("odoo_agent.graph.ALL_TOOLS", [echo])
     r = ask("q", llm=ScriptedLLM([ai("hi")]))
     assert r.tools_called == [] and r.answer == "hi"
 
 
 def test_tool_error_is_returned_to_model(monkeypatch):
-    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [boom])
+    monkeypatch.setattr("odoo_agent.graph.ALL_TOOLS", [boom])
     llm = ScriptedLLM([ai(calls=[("boom", {})]), ai("sorry")])
     r = ask("q", llm=llm)
     tool_msg = next(m for m in r.messages if m.type == "tool")
@@ -61,7 +61,7 @@ def test_tool_error_is_returned_to_model(monkeypatch):
 
 
 def test_max_steps_guard_forces_answer(monkeypatch):
-    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [echo])
+    monkeypatch.setattr("odoo_agent.graph.ALL_TOOLS", [echo])
     # Model asks for a tool forever; the final reply (last item repeats) is only reachable via the guard.
     looping = ai(calls=[("echo", {"x": 1})])
     llm = ScriptedLLM([looping, looping, ai("forced")])
@@ -78,9 +78,9 @@ def fake_docs(query: str) -> list:
 
 
 def test_events_report_progress_and_result(monkeypatch):
-    from odoo_agent.agent import ask_events
+    from odoo_agent.graph import ask_events
 
-    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [echo, fake_docs])
+    monkeypatch.setattr("odoo_agent.graph.ALL_TOOLS", [echo, fake_docs])
     llm = ScriptedLLM([ai(calls=[("echo", {"x": 1}), ("search_process_docs", {"query": "q"})]), ai("done")])
     events = list(ask_events("q", llm=llm))
     stages = [(e["stage"], e["label"]) for e in events if e["type"] == "status"]
@@ -91,12 +91,12 @@ def test_events_report_progress_and_result(monkeypatch):
 
 
 def test_rag_sources_are_deduplicated(monkeypatch):
-    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [fake_docs])
+    monkeypatch.setattr("odoo_agent.graph.ALL_TOOLS", [fake_docs])
     r = ask("q", llm=ScriptedLLM([ai(calls=[("search_process_docs", {"query": "q"})]), ai("ok")]))
     assert r.sources == ["refund-policy.md", "sales-stages.md"]
 
 
 def test_no_sources_without_rag(monkeypatch):
-    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [echo])
+    monkeypatch.setattr("odoo_agent.graph.ALL_TOOLS", [echo])
     r = ask("q", llm=ScriptedLLM([ai(calls=[("echo", {"x": 1})]), ai("ok")]))
     assert r.sources == [] and r.model.endswith("unknown")

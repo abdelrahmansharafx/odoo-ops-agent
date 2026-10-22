@@ -19,13 +19,13 @@ flowchart LR
     T --> L[search_leads<br/>get_pipeline_summary<br/>search_sales_orders<br/>get_customer_profile]
     T --> R[search_process_docs]
     L --> C[Read-only XML-RPC client] --> O[(Odoo 17 + Postgres)]
-    R --> V[(Chroma, local embeddings)] --- D[docs/*.md]
+    R --> V[(Chroma, local embeddings)] --- D[knowledge/*.md]
 ```
 
-- `odoo_agent/odoo_client.py`: XML-RPC wrapper. Only `search_read` and `read_group` can be sent; anything else raises.
-- `odoo_agent/tools.py`: typed LangChain tools with docstrings the model reads.
-- `odoo_agent/rag.py`: chunks `docs/*.md` by heading, indexes into Chroma (default local ONNX embedder, so no embedding API key).
-- `odoo_agent/agent.py`: graph with a step guard (`MAX_STEPS=6`); at the limit the final node forces an answer from what was gathered. Returns the tools called, steps, tokens and latency.
+- `odoo_agent/odoo/client.py`: XML-RPC wrapper. Only `search_read` and `read_group` can be sent; anything else raises.
+- `odoo_agent/tools/`: typed LangChain tools with docstrings the model reads (`odoo_tools.py` for Odoo, `knowledge_tools.py` for the docs search).
+- `odoo_agent/retrieval/store.py`: chunks `knowledge/*.md` by heading, indexes into Chroma (default local ONNX embedder, so no embedding API key).
+- `odoo_agent/graph.py`: graph with a step guard (`MAX_STEPS=6`); at the limit the final node forces an answer from what was gathered. Returns the tools called, steps, tokens and latency.
 - `odoo_agent/api.py` + `odoo_addons/agent_chat/`: FastAPI wrapper (returns the answer as markdown and as HTML) and an Odoo 17 addon that adds a **Business Agent** contact to Odoo's native chat. A message sent to it is answered in a background thread (so the chat doesn't freeze) via the streaming `/ask/stream` endpoint of the `agent` container. The bot posts a live status message (asking the model, searching docs via RAG, querying Odoo) that turns into the final formatted answer with chips for the model, the RAG documents retrieved, the Odoo tools called and the time.
 - `evals/`: 21 questions, scoring and a report generator.
 
@@ -39,7 +39,7 @@ docker compose up -d            # first start installs modules + demo data (a fe
 uv venv --python 3.11 && uv pip install -r requirements.txt   # or: python3.11 -m venv .venv && pip install -r requirements.txt
 source .venv/bin/activate
 python -m odoo_agent "how many leads are in qualified stage?"
-streamlit run streamlit_app.py
+streamlit run app.py
 ```
 
 `docker compose up -d --build` also starts the `agent` API (port 8000) and installs the **Agent Chat** addon. Log in to Odoo

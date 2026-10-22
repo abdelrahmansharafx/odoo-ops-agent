@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from .agent import AgentResult, ask, ask_events
+from .graph import AgentResult, ask, ask_events
 from .config import setup_logging
 
 setup_logging()

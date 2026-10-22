@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 from chromadb import Documents, EmbeddingFunction, Embeddings
 
-from odoo_agent import rag
+from odoo_agent import tools as rag
+from odoo_agent.retrieval import store as retrieval_store
 
 VOCAB = ["refund", "credit", "discount", "stage", "routing", "lead", "approve", "days"]
 
@@ -32,7 +33,7 @@ class BagOfWords(EmbeddingFunction):
 def store(tmp_path: Path):
     (tmp_path / "refund.md").write_text("# Refund Policy\n\nRefund within 30 days.\n\n## Approval\nApprove refund above 500.")
     (tmp_path / "stages.md").write_text("# Sales Stages\n\nEach lead sits in one stage.")
-    s = rag.DocStore(tmp_path, persist_dir=None, embedding_function=BagOfWords())
+    s = retrieval_store.DocStore(tmp_path, persist_dir=None, embedding_function=BagOfWords())
     rag.set_store(s)
     yield s
     rag.set_store(None)
@@ -41,7 +42,7 @@ def store(tmp_path: Path):
 def test_chunking_splits_on_h2_and_keeps_title(tmp_path):
     p = tmp_path / "a.md"
     p.write_text("# Title\n\nintro\n\n## Part\nbody")
-    chunks = rag.chunk_markdown(p)
+    chunks = retrieval_store.chunk_markdown(p)
     assert [c[0] for c in chunks] == ["a:0", "a:1"]
     assert chunks[1][1].startswith("Title\n## Part")
 
@@ -63,5 +64,5 @@ def test_tool_returns_passages(store):
 
 
 def test_real_docs_chunk_cleanly():
-    for p in rag.DOCS_DIR.glob("*.md"):
-        assert rag.chunk_markdown(p)
+    for p in retrieval_store.DOCS_DIR.glob("*.md"):
+        assert retrieval_store.chunk_markdown(p)

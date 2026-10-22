@@ -1,7 +1,7 @@
-"""Minimal chat UI: streamlit run streamlit_app.py"""
+"""Minimal chat UI: streamlit run app.py"""
 import streamlit as st
 
-from odoo_agent.agent import ask
+from odoo_agent.graph import ask
 from odoo_agent.config import setup_logging
 
 setup_logging()

@@ -3,7 +3,7 @@ import json
 from fastapi.testclient import TestClient
 
 from odoo_agent import api
-from odoo_agent.agent import AgentResult
+from odoo_agent.graph import AgentResult
 
 client = TestClient(api.app)
 

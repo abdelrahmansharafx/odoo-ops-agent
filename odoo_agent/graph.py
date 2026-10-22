@@ -12,10 +12,9 @@ from typing import Annotated, Any, Iterator, TypedDict
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
 from langgraph.graph import END, START, StateGraph
 
-from .rag import search_process_docs
-from .tools import DATA_TOOLS
+from .tools import DATA_TOOLS, search_process_docs
 
-log = logging.getLogger("odoo_agent.agent")
+log = logging.getLogger("odoo_agent.graph")
 
 ALL_TOOLS = [*DATA_TOOLS, search_process_docs]
 MAX_STEPS = 6

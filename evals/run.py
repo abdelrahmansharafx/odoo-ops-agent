@@ -14,9 +14,9 @@ from pathlib import Path
 
 from langchain_core.messages import HumanMessage
 
-from odoo_agent.agent import ask
+from odoo_agent.graph import ask
 from odoo_agent.config import get_llm, resolve_provider, setup_logging
-from odoo_agent.odoo_client import OdooClient
+from odoo_agent.odoo.client import OdooClient
 
 from .scoring import contains_match, number_match, parse_judge, percentile, tool_selection_ok
 
