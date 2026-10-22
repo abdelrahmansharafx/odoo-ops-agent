@@ -7,7 +7,7 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 12.5,
+    "latency_s": 31.02,
     "in": 2404,
     "out": 27,
     "note": "expected 13",
@@ -21,11 +21,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 12.26,
+    "latency_s": 37.19,
     "in": 2392,
-    "out": 28,
+    "out": 27,
     "note": "expected 13",
-    "answer": "There are **13** leads in the New stage."
+    "answer": "There are 13 leads in the New stage."
   },
   {
     "id": "d03",
@@ -35,7 +35,7 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 25.6,
+    "latency_s": 67.32,
     "in": 2256,
     "out": 27,
     "note": "expected 10",
@@ -49,11 +49,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 6.92,
+    "latency_s": 49.09,
     "in": 1809,
-    "out": 123,
+    "out": 48,
     "note": "expected 39",
-    "answer": "There are 39 active leads in the pipeline in total (with a total expected revenue of $731,044). Broken down by stage:\n\n* **New:** 13 leads ($115,475)\n* **Qualified:** 13 leads ($312,568)\n* **Proposition:** 10 leads ($279,201)\n* **Won:** 3 leads ($23,800)"
+    "answer": "There are 39 active leads in the pipeline in total (with a total expected revenue of $731,044)."
   },
   {
     "id": "d05",
@@ -63,25 +63,23 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 9.85,
+    "latency_s": 117.22,
     "in": 1807,
-    "out": 122,
+    "out": 120,
     "note": "expected 731044.0",
-    "answer": "The total expected revenue of the whole pipeline is **$731,044** across 39 leads. \n\nBreakdown by stage:\n- **New**: $115,475 (13 leads)\n- **Qualified**: $312,568 (13 leads)\n- **Proposition**: $279,201 (10 leads)\n- **Won**: $23,800 (3 leads)"
+    "answer": "The total expected revenue of the whole pipeline is $731,044 across 39 leads. \n\nBreakdown by stage:\n- **New:** $115,475 (13 leads)\n- **Qualified:** $312,568 (13 leads)\n- **Proposition:** $279,201 (10 leads)\n- **Won:** $23,800 (3 leads)"
   },
   {
     "id": "d06",
     "category": "data",
-    "tools": [
-      "search_sales_orders"
-    ],
-    "tool_ok": true,
-    "answer_ok": true,
-    "latency_s": 111.12,
-    "in": 2729,
-    "out": 43,
-    "note": "expected 15",
-    "answer": "There are 15 confirmed sales orders, with a total amount of $20,321.11."
+    "tools": [],
+    "tool_ok": false,
+    "answer_ok": false,
+    "latency_s": 0.0,
+    "in": 0,
+    "out": 0,
+    "note": "ERROR RemoteProtocolError: Server disconnected without sending a response.",
+    "answer": ""
   },
   {
     "id": "d07",
@@ -91,7 +89,7 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 9.43,
+    "latency_s": 29.59,
     "in": 1970,
     "out": 42,
     "note": "expected 4",
@@ -105,11 +103,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 63.37,
+    "latency_s": 22.91,
     "in": 2735,
-    "out": 45,
+    "out": 46,
     "note": "expected 20321.11",
-    "answer": "The total amount of all confirmed sales orders is **$20,321.11** across 15 orders."
+    "answer": "The total amount of all confirmed sales orders is **$20,321.11** (across 15 orders)."
   },
   {
     "id": "d09",
@@ -119,7 +117,7 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 18.01,
+    "latency_s": 89.24,
     "in": 2285,
     "out": 36,
     "note": "expected 'john.b@tech.info'",
@@ -133,11 +131,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 22.79,
+    "latency_s": 86.94,
     "in": 1784,
-    "out": 53,
+    "out": 52,
     "note": "expected 'Mitchell Admin'",
-    "answer": "**Mitchell Admin** owns the most active leads, with **18** leads in total (and $240,187 in expected revenue)."
+    "answer": "**Mitchell Admin** owns the most active leads, with **18** leads (totaling $240,187 in expected revenue)."
   },
   {
     "id": "p01",
@@ -147,11 +145,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 7.58,
-    "in": 1993,
-    "out": 53,
-    "note": "The assistant correctly identifies that the sales manager must approve refunds above 500 EUR.",
-    "answer": "A refund of 700 EUR must be approved by the **sales manager** (refunds above 500 EUR require sales manager approval)."
+    "latency_s": 28.66,
+    "in": 1994,
+    "out": 59,
+    "note": "The assistant correctly identified that the sales manager must approve refunds over 500 EUR, perfectly matching the reference answer.",
+    "answer": "A refund of 700 EUR must be approved by the **sales manager**, as refunds above 500 EUR require sales manager approval (according to the Refund Policy)."
   },
   {
     "id": "p02",
@@ -161,9 +159,9 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 19.62,
-    "in": 1992,
-    "out": 42,
+    "latency_s": 15.5,
+    "in": 1989,
+    "out": 39,
     "note": "The assistant accurately stated the refund period as 30 days from the invoice date, matching the reference answer.",
     "answer": "Customers have **30 days** from the invoice date to request a full refund."
   },
@@ -175,11 +173,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 12.87,
-    "in": 2140,
-    "out": 57,
-    "note": "The assistant correctly identifies that a 15% discount requires approval from the sales manager, matching the reference answer's range of 10% to 20%.",
-    "answer": "A 15% discount on a quotation requires approval from the **Sales manager** (discounts from 10% to 20% fall under their approval level)."
+    "latency_s": 111.7,
+    "in": 2142,
+    "out": 40,
+    "note": "The assistant correctly identifies that the sales manager approves a 15% discount, matching the reference answer.",
+    "answer": "A 15% discount on a quotation requires approval from the **Sales manager**."
   },
   {
     "id": "p04",
@@ -189,11 +187,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 26.99,
-    "in": 2020,
-    "out": 105,
-    "note": "The assistant correctly identifies all pipeline stages and defines 'Qualified' in accordance with the reference answer while adding helpful context.",
-    "answer": "The pipeline stages are:\n1. **New**: Lead captured, not yet contacted.\n2. **Qualified**: Budget, need, and decision-maker confirmed (after a discovery call completed).\n3. **Proposition**: A quotation has been sent.\n4. **Won**: Quotation confirmed as a sales order.\n\n*(An opportunity may also be marked as **Lost** from any stage.)*"
+    "latency_s": 29.91,
+    "in": 2019,
+    "out": 127,
+    "note": "The assistant correctly identifies all pipeline stages and defines Qualified in accordance with the reference answer, while adding valid extra detail.",
+    "answer": "The pipeline stages are:\n1. **New**: Lead captured, not yet contacted (Exit criteria: first contact attempt made).\n2. **Qualified**: Budget, need, and decision-maker confirmed (Exit criteria: discovery call completed).\n3. **Proposition**: A quotation has been sent (Exit criteria: customer accepts or rejects the quote).\n4. **Won**: Quotation confirmed as a sales order (Closed).\n\n*(Note: An opportunity may also be marked as **Lost** from any stage.)*"
   },
   {
     "id": "p05",
@@ -203,11 +201,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 27.84,
-    "in": 1910,
-    "out": 56,
-    "note": "The assistant correctly identified the Enterprise team and included the reasoning from the reference answer.",
-    "answer": "A lead from a company with 500 employees goes to the **Enterprise team** (since it has more than 250 employees)."
+    "latency_s": 108.6,
+    "in": 1911,
+    "out": 53,
+    "note": "The assistant correctly identified the Enterprise team based on the criteria for companies with more than 250 employees.",
+    "answer": "According to the lead routing policy, leads from companies with more than 250 employees are routed to the **Enterprise team**."
   },
   {
     "id": "p06",
@@ -217,9 +215,9 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 18.63,
-    "in": 2137,
-    "out": 37,
+    "latency_s": 8.07,
+    "in": 2136,
+    "out": 36,
     "note": "The assistant correctly stated that quotations are valid for 30 days by default.",
     "answer": "Quotations are valid for **30 days** by default."
   },
@@ -231,11 +229,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 58.96,
+    "latency_s": 10.94,
     "in": 2098,
-    "out": 38,
-    "note": "The assistant accurately states that confirming a sales order moves the linked opportunity to the Won stage.",
-    "answer": "Confirming a sales order moves the linked opportunity to the **Won** stage."
+    "out": 37,
+    "note": "The assistant accurately conveys that confirming the order moves the linked opportunity to the Won stage.",
+    "answer": "Confirming an order moves the linked opportunity to the **Won** stage."
   },
   {
     "id": "m01",
@@ -246,10 +244,10 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 23.59,
+    "latency_s": 11.67,
     "in": 2860,
     "out": 65,
-    "note": "The assistant correctly identified both the number of leads (13) and the default win probability (30%) for the Qualified stage.",
+    "note": "The assistant accurately stated both the number of leads in the Qualified stage and the default win probability.",
     "answer": "There are **13** leads in the Qualified stage. \n\nThe default win probability for the Qualified stage is **30%**."
   },
   {
@@ -261,11 +259,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 25.09,
+    "latency_s": 9.95,
     "in": 2397,
-    "out": 97,
-    "note": "The assistant correctly identified the number of draft quotations and specified that the sales director must approve a 25% discount.",
-    "answer": "There are **4** draft quotations in total (with a total amount of 6,290.51).\n\nAccording to the discount approval policy, a discount above 20% (such as 25%) must be approved by the **Sales director**."
+    "out": 98,
+    "note": "The assistant correctly identifies that there are 4 draft quotations and that a 25% discount requires approval from the Sales director.",
+    "answer": "There are **4** draft quotations in total (with a combined total amount of 6,290.51).\n\nAccording to the Discount Approval Matrix, a **25%** discount is above 20% and must be approved by the **Sales director**."
   },
   {
     "id": "m03",
@@ -276,11 +274,11 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 19.93,
-    "in": 2075,
-    "out": 108,
-    "note": "The assistant accurately provided the expected revenue for the New stage and correctly identified the SMB team for a 100-employee company.",
-    "answer": "The total expected revenue in the **New** stage is **$115,475** (across 13 leads).\n\nAccording to the lead routing policy, leads from a company with 100 employees (250 employees or fewer) are handled by the **SMB team**."
+    "latency_s": 11.17,
+    "in": 2072,
+    "out": 106,
+    "note": "The assistant correctly identified the expected revenue in the New stage and the correct team for a 100-employee company.",
+    "answer": "- The total expected revenue in the **New** stage is **$115,475** (across 13 leads).\n- According to the lead routing policy, leads from companies with 100 employees (250 employees or fewer) are handled by the **SMB team**."
   },
   {
     "id": "m04",
@@ -291,10 +289,10 @@
     ],
     "tool_ok": true,
     "answer_ok": true,
-    "latency_s": 36.29,
+    "latency_s": 48.31,
     "in": 2659,
-    "out": 75,
-    "note": "The assistant accurately stated both the number of sales orders and the refund window from the reference answer.",
-    "answer": "Gemini Furniture has **13** sales orders.\n\nAccording to company policy, customers may request a full refund within **30 days** of the invoice date."
+    "out": 109,
+    "note": "The assistant accurately provides both the number of sales orders and the exact refund window mentioned in the reference answer.",
+    "answer": "Gemini Furniture has **13** sales orders.\n\nAccording to the refund policy, customers may request a full refund within **30 days** of the invoice date (refunds between day 31 and 60 are issued as credit notes only, and no refunds are allowed after 60 days except for product defects)."
   }
 ]

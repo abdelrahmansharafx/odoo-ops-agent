@@ -72,14 +72,14 @@ use no tool outside the acceptable sets. Numbers use exact match (0.5 tolerance 
 
 ### Results
 
-Single run on 2026-10-22, `gemini-3.5-flash-lite` (free tier) as both agent and judge, against the Odoo 17 demo data. Full per-question detail is in [`evals/REPORT.md`](evals/REPORT.md).
+Run on 2026-10-22 after the project restructure, `gemini-3.5-flash-lite` (free tier) as both agent and judge, against the Odoo 17 demo data. The raw output of the full run is in [`evals/REPORT.md`](evals/REPORT.md).
 
 | Metric | Result |
 |---|---|
 | Tool-selection accuracy | 100% (21/21) |
 | Answer correctness | 100% (21/21) |
-| Latency p50 / p95 | 19.9s / 63.4s |
-| Avg tokens / question (in + out) | 2212 + 60 |
+| Latency p50 / p95 | 31.0s / 111.7s |
+| Avg tokens / question (in + out) | 2211 + 58 |
 
 | Category | n | Tool selection | Answer correct |
 |---|---|---|---|
@@ -87,10 +87,11 @@ Single run on 2026-10-22, `gemini-3.5-flash-lite` (free tier) as both agent and 
 | process | 7 | 7/7 | 7/7 |
 | multi-step | 4 | 4/4 | 4/4 |
 
-An earlier run scored 20/21: the one miss (m04, Gemini Furniture's order count) came from `get_customer_profile` returning only
-the 10 latest orders. I fixed the tool to return an exact `order_count` and re-ran. Because the fix was made after seeing that
-failure, and the question set is small, treat 100% as "no known failures", not as a robust accuracy estimate.
-Latency is dominated by free-tier rate limiting and retries (about 9s per model call, with spikes), not by Odoo or retrieval.
+**Caveat on the numbers:** in the full run, question d06 failed with a Gemini connection error ("server disconnected"), not a
+wrong answer, so `evals/REPORT.md` shows 20/21 (95%). I re-ran d06 alone and it passed; the table above uses that re-run for d06.
+The other 20 questions are from the single full run. Because the question set is small and the fix to `get_customer_profile`
+was made after an earlier failure, read 100% as "no known failures", not as a robust accuracy estimate.
+Latency is dominated by free-tier rate limiting and retries (frequent 503/504 from Gemini), not by Odoo or retrieval.
 
 ## Limitations
 
