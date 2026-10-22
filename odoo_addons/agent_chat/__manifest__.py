@@ -4,7 +4,7 @@
     "version": "17.0.2.0.0",
     "category": "Productivity",
     "depends": ["mail", "crm", "sale_management"],
-    "data": ["data/bot_data.xml"],
+    "data": ["data/bot_data.xml", "data/bot_avatar.xml"],
     "assets": {
         "web.assets_backend": [
             "agent_chat/static/src/scss/agent_chat.scss",

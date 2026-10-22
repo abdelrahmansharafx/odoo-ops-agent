@@ -20,8 +20,12 @@ def _chip(kind, text):
 
 
 def thinking_html():
-    """Animated by the .o_agent_thinking class in the addon's stylesheet."""
-    return Markup('<span class="o_agent_thinking">Thinking</span>')
+    """Spinning sparkle, shimmering word and skeleton lines; all animation lives in the addon's stylesheet."""
+    return Markup(
+        '<div class="o_agent_thinking"><span class="o_agent_spark"></span>'
+        '<span class="o_agent_thinking_text">Thinking</span></div>'
+        '<div class="o_agent_skeleton"><span></span><span></span></div>'
+    )
 
 
 def answer_html(data):

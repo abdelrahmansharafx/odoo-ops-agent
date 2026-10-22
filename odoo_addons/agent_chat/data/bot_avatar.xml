@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Not noupdate: the avatar is refreshed on every module update. -->
+<odoo>
+    <record id="user_business_agent" model="res.users">
+        <field name="image_1920" type="base64" file="agent_chat/static/img/agent.png"/>
+    </record>
+</odoo>

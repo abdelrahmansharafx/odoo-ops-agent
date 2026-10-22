@@ -1,23 +1,54 @@
-// "Thinking" indicator in the Business Agent chat: gradient shimmer plus a soft glow/dim pulse.
+// ---- "Thinking" indicator inside the Business Agent chat ------------------------------------
+// Spinning gradient sparkle + shimmering word + skeleton lines (the pattern used by modern AI chats).
 .o_agent_thinking {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 600;
     letter-spacing: .02em;
-    background: linear-gradient(90deg, #4285f4, #9b72cb, #d96570, #9b72cb, #4285f4);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: o_agent_shimmer 2.2s linear infinite, o_agent_pulse 1.6s ease-in-out infinite;
 
-    &::after {
-        content: "";
-        display: inline-block;
-        width: 1.2em;
-        text-align: left;
-        animation: o_agent_dots 1.4s steps(4, end) infinite;
+    .o_agent_spark {
+        width: 18px;
+        height: 18px;
+        flex: none;
+        background: linear-gradient(135deg, #4285f4, #9b72cb 55%, #d96570);
+        clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+        animation: o_agent_spin 2.4s ease-in-out infinite;
     }
+
+    .o_agent_thinking_text {
+        background: linear-gradient(90deg, #4285f4, #9b72cb, #d96570, #9b72cb, #4285f4);
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        animation: o_agent_shimmer 2.2s linear infinite, o_agent_pulse 1.8s ease-in-out infinite;
+    }
+}
+
+.o_agent_skeleton {
+    width: 260px;
+    max-width: 100%;
+    margin-top: 10px;
+
+    span {
+        display: block;
+        height: 8px;
+        margin-top: 7px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(128, 128, 128, .14) 25%, rgba(155, 114, 203, .32) 50%, rgba(128, 128, 128, .14) 75%);
+        background-size: 200% 100%;
+        animation: o_agent_sweep 1.5s linear infinite;
+
+        &:nth-child(1) { width: 92%; }
+        &:nth-child(2) { width: 62%; animation-delay: .2s; }
+    }
+}
+
+@keyframes o_agent_spin {
+    0%, 100% { transform: rotate(0deg) scale(.8); opacity: .75; }
+    50% { transform: rotate(180deg) scale(1.15); opacity: 1; }
 }
 
 @keyframes o_agent_shimmer {
@@ -26,18 +57,16 @@
 }
 
 @keyframes o_agent_pulse {
-    0%, 100% { opacity: .35; filter: drop-shadow(0 0 0 rgba(155, 114, 203, 0)); }
-    50% { opacity: 1; filter: drop-shadow(0 0 6px rgba(155, 114, 203, .85)); }
+    0%, 100% { opacity: .5; }
+    50% { opacity: 1; }
 }
 
-@keyframes o_agent_dots {
-    0% { content: ""; }
-    25% { content: "."; }
-    50% { content: ".."; }
-    75% { content: "..."; }
+@keyframes o_agent_sweep {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
 }
 
-// Top-bar AI icon
+// ---- Top-bar AI icon: no background, just the sparkle ---------------------------------------
 .o_agent_ai_systray {
     .o_agent_ai_btn {
         display: flex;
@@ -46,18 +75,16 @@
         height: 100%;
         border: 0;
         background: transparent;
-        // white tile behind the gradient sparkle so it stays visible on any navbar colour
+
         .o_agent_ai_icon {
-            padding: 3px;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, .92);
-            transition: transform .2s ease, box-shadow .2s ease;
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, .35));
+            transition: transform .25s ease, filter .25s ease;
         }
         &:hover .o_agent_ai_icon {
-            transform: scale(1.08);
-            box-shadow: 0 0 10px rgba(155, 114, 203, .8);
+            transform: rotate(20deg) scale(1.15);
+            filter: drop-shadow(0 0 8px rgba(197, 138, 249, .95));
         }
     }
 }
