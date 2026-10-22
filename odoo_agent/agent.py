@@ -7,7 +7,7 @@ import operator
 import time
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Annotated, Any, TypedDict
+from typing import Annotated, Any, Iterator, TypedDict
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
 from langgraph.graph import END, START, StateGraph
@@ -47,7 +47,31 @@ class AgentResult:
     output_tokens: int = 0
     latency_s: float = 0.0
     hit_step_limit: bool = False
+    model: str = ""          # e.g. "Gemini · gemini-3.5-flash-lite"
+    sources: list[str] = field(default_factory=list)  # RAG documents the answer drew on
     messages: list[BaseMessage] = field(default_factory=list, repr=False)
+
+
+LLM_LABELS = {"ChatGoogleGenerativeAI": "Gemini", "ChatAnthropic": "Claude", "ChatOpenAI": "OpenAI"}
+
+
+def describe_llm(llm) -> tuple[str, str]:
+    """(provider label, model name) for display, e.g. ("Gemini", "gemini-3.5-flash-lite")."""
+    label = LLM_LABELS.get(type(llm).__name__, "LLM")
+    return label, str(getattr(llm, "model", None) or getattr(llm, "model_name", None) or "unknown")
+
+
+def _rag_sources(messages: list[BaseMessage]) -> list[str]:
+    seen: list[str] = []
+    for m in messages:
+        if isinstance(m, ToolMessage) and m.name == "search_process_docs":
+            try:
+                for hit in json.loads(m.content):
+                    if hit["source"] not in seen:
+                        seen.append(hit["source"])
+            except (ValueError, TypeError, KeyError):
+                pass  # an error string from the tool: no sources
+    return seen
 
 
 def _usage(msg: AIMessage) -> list[dict]:
@@ -118,17 +142,36 @@ def build_graph(llm, tools=None, max_steps: int = MAX_STEPS):
     return g.compile()
 
 
-def ask(question: str, llm=None, max_steps: int = MAX_STEPS) -> AgentResult:
+def ask_events(question: str, llm=None, max_steps: int = MAX_STEPS) -> Iterator[dict]:
+    """Run the agent, yielding progress events and finally {"type": "result", "result": AgentResult}.
+
+    Status events: {"type": "status", "stage": "gemini"|"rag"|"odoo", "label": str} (stage "gemini" is
+    used for whichever LLM is configured: it means "the model is working").
+    """
     if llm is None:
         from .config import get_llm
 
         llm = get_llm()
+    provider, model = describe_llm(llm)
     graph = build_graph(llm, max_steps=max_steps)
     start = time.perf_counter()
-    state = graph.invoke(
-        {"messages": [HumanMessage(question)], "steps": 0, "tool_calls": [], "usage": [], "limit_hit": False},
-        {"recursion_limit": 2 * max_steps + 5},
-    )
+    init = {"messages": [HumanMessage(question)], "steps": 0, "tool_calls": [], "usage": [], "limit_hit": False}
+    thinking = {"type": "status", "stage": "gemini", "label": f"Asking {provider} ({model})"}
+    yield thinking
+    state = init
+    for mode, chunk in graph.stream(init, {"recursion_limit": 2 * max_steps + 5}, stream_mode=["updates", "values"]):
+        if mode == "values":
+            state = chunk
+            continue
+        for node, delta in chunk.items():
+            if node == "agent":
+                for call in delta["messages"][-1].tool_calls:
+                    if call["name"] == "search_process_docs":
+                        yield {"type": "status", "stage": "rag", "label": "Searching process docs (RAG)"}
+                    else:
+                        yield {"type": "status", "stage": "odoo", "label": f"Querying Odoo ({call['name']})"}
+            elif node == "tools":
+                yield {**thinking, "label": f"Asking {provider} to write the answer"}
     final = next(m for m in reversed(state["messages"]) if isinstance(m, AIMessage) and not m.tool_calls)
     latency = time.perf_counter() - start
     calls = state["tool_calls"]
@@ -141,8 +184,17 @@ def ask(question: str, llm=None, max_steps: int = MAX_STEPS) -> AgentResult:
         output_tokens=sum(u["out"] for u in state["usage"]),
         latency_s=round(latency, 2),
         hit_step_limit=state["limit_hit"],
+        model=f"{provider} · {model}",
+        sources=_rag_sources(state["messages"]),
         messages=state["messages"],
     )
     log.info("done steps=%d tools=%s tokens_in=%d tokens_out=%d latency=%.2fs",
              result.steps, result.tools_called, result.input_tokens, result.output_tokens, result.latency_s)
-    return result
+    yield {"type": "result", "result": result}
+
+
+def ask(question: str, llm=None, max_steps: int = MAX_STEPS) -> AgentResult:
+    for event in ask_events(question, llm=llm, max_steps=max_steps):
+        if event["type"] == "result":
+            return event["result"]
+    raise RuntimeError("agent produced no result")

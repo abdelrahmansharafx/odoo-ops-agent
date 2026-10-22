@@ -68,3 +68,35 @@ def test_max_steps_guard_forces_answer(monkeypatch):
     r = ask("q", llm=llm, max_steps=2)
     assert r.hit_step_limit and r.answer == "forced"
     assert r.steps == 2
+
+
+@tool("search_process_docs")
+def fake_docs(query: str) -> list:
+    """Fake RAG tool."""
+    return [{"source": "refund-policy.md", "text": "x"}, {"source": "sales-stages.md", "text": "y"},
+            {"source": "refund-policy.md", "text": "z"}]
+
+
+def test_events_report_progress_and_result(monkeypatch):
+    from odoo_agent.agent import ask_events
+
+    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [echo, fake_docs])
+    llm = ScriptedLLM([ai(calls=[("echo", {"x": 1}), ("search_process_docs", {"query": "q"})]), ai("done")])
+    events = list(ask_events("q", llm=llm))
+    stages = [(e["stage"], e["label"]) for e in events if e["type"] == "status"]
+    assert stages[0][0] == "gemini"
+    assert ("odoo", "Querying Odoo (echo)") in stages and ("rag", "Searching process docs (RAG)") in stages
+    assert stages[-1][0] == "gemini"  # model writes the answer after the tools ran
+    assert events[-1]["type"] == "result" and events[-1]["result"].answer == "done"
+
+
+def test_rag_sources_are_deduplicated(monkeypatch):
+    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [fake_docs])
+    r = ask("q", llm=ScriptedLLM([ai(calls=[("search_process_docs", {"query": "q"})]), ai("ok")]))
+    assert r.sources == ["refund-policy.md", "sales-stages.md"]
+
+
+def test_no_sources_without_rag(monkeypatch):
+    monkeypatch.setattr("odoo_agent.agent.ALL_TOOLS", [echo])
+    r = ask("q", llm=ScriptedLLM([ai(calls=[("echo", {"x": 1})]), ai("ok")]))
+    assert r.sources == [] and r.model.endswith("unknown")
