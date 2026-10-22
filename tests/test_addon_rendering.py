@@ -9,7 +9,7 @@ spec.loader.exec_module(rendering)
 
 def test_thinking_uses_animated_class_and_minimal_text():
     html = str(rendering.thinking_html())
-    assert 'class="o_agent_thinking"' in html and ">Thinking<" in html
+    assert 'class="o_agent_think"' in html and ">Thinking<" in html
     assert "o_agent_spark" in html and "o_agent_skeleton" in html
     assert html.count(">Thinking<") == 1 and "…" not in html  # one word, nothing else
 

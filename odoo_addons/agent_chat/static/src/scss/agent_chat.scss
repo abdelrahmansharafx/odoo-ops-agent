@@ -1,6 +1,6 @@
 // ---- "Thinking" indicator inside the Business Agent chat ------------------------------------
 // Spinning gradient sparkle + shimmering word + skeleton lines (the pattern used by modern AI chats).
-.o_agent_thinking {
+.o_agent_think {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -16,7 +16,7 @@
         animation: o_agent_spin 2.4s ease-in-out infinite;
     }
 
-    .o_agent_thinking_text {
+    .o_agent_think_text {
         background: linear-gradient(90deg, #4285f4, #9b72cb, #d96570, #9b72cb, #4285f4);
         background-size: 200% 100%;
         -webkit-background-clip: text;
