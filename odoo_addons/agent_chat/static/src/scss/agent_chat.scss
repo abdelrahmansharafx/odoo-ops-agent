@@ -1,7 +1,7 @@
 .o_agent_chat {
     position: relative;
 
-    .o_agent_chat_toggle { color: inherit; font-size: 1.2rem; }
+    .o_agent_chat_toggle { color: rgba(255, 255, 255, .85); font-size: 1.2rem; &:hover { color: #fff; } }
 
     .o_agent_chat_panel {
         position: absolute;

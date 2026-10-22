@@ -38,9 +38,17 @@ services:
       HOST: db
       USER: odoo
       PASSWORD: odoo
-    command: >
-      odoo -d odoo -i base,contacts,crm,sale_management,agent_chat
-      --stop-after-init
+    # Idempotent: full install (with demo data) only on a fresh DB. Re-running `-i base` on an
+    # existing DB resets the admin user's groups, so afterwards only the addon is (re)installed.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        DB="--db_host db --db_user odoo --db_password odoo"
+        if python3 -c "import psycopg2; psycopg2.connect(host='db', user='odoo', password='odoo', dbname='odoo')" 2>/dev/null; then
+          odoo -d odoo $$DB -i agent_chat -u agent_chat --stop-after-init
+        else
+          odoo -d odoo $$DB -i base,contacts,crm,sale_management,agent_chat --stop-after-init
+        fi
     volumes:
       - odoo-data:/var/lib/odoo
       - ./odoo_addons:/mnt/extra-addons:ro
