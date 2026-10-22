@@ -1,0 +1,300 @@
+[
+  {
+    "id": "d01",
+    "category": "data",
+    "tools": [
+      "search_leads"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 21.39,
+    "in": 2386,
+    "out": 27,
+    "note": "expected 13",
+    "answer": "There are 13 leads in the Qualified stage."
+  },
+  {
+    "id": "d02",
+    "category": "data",
+    "tools": [
+      "search_leads"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 17.97,
+    "in": 2374,
+    "out": 27,
+    "note": "expected 13",
+    "answer": "There are 13 leads in the New stage."
+  },
+  {
+    "id": "d03",
+    "category": "data",
+    "tools": [
+      "search_leads"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 24.02,
+    "in": 2238,
+    "out": 27,
+    "note": "expected 10",
+    "answer": "There are 10 leads in the Proposition stage."
+  },
+  {
+    "id": "d04",
+    "category": "data",
+    "tools": [
+      "get_pipeline_summary"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 17.48,
+    "in": 1791,
+    "out": 48,
+    "note": "expected 39",
+    "answer": "There are 39 active leads in the pipeline in total (with a total expected revenue of $731,044)."
+  },
+  {
+    "id": "d05",
+    "category": "data",
+    "tools": [
+      "get_pipeline_summary"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 21.78,
+    "in": 1789,
+    "out": 45,
+    "note": "expected 731044.0",
+    "answer": "The total expected revenue of the whole pipeline is **$731,044** across 39 leads."
+  },
+  {
+    "id": "d06",
+    "category": "data",
+    "tools": [
+      "search_sales_orders"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 24.2,
+    "in": 2711,
+    "out": 43,
+    "note": "expected 15",
+    "answer": "There are 15 confirmed sales orders, with a total amount of $20,321.11."
+  },
+  {
+    "id": "d07",
+    "category": "data",
+    "tools": [
+      "search_sales_orders"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 22.25,
+    "in": 1952,
+    "out": 42,
+    "note": "expected 4",
+    "answer": "There are **4** draft quotations, with a total amount of **$6,290.51**."
+  },
+  {
+    "id": "d08",
+    "category": "data",
+    "tools": [
+      "search_sales_orders"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 20.6,
+    "in": 2717,
+    "out": 42,
+    "note": "expected 20321.11",
+    "answer": "The total amount of all 15 confirmed sales orders is **$20,321.11**."
+  },
+  {
+    "id": "d09",
+    "category": "data",
+    "tools": [
+      "get_customer_profile"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 20.08,
+    "in": 2260,
+    "out": 36,
+    "note": "expected 'john.b@tech.info'",
+    "answer": "Gemini Furniture's email address is john.b@tech.info."
+  },
+  {
+    "id": "d10",
+    "category": "data",
+    "tools": [
+      "get_pipeline_summary"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 19.15,
+    "in": 1766,
+    "out": 52,
+    "note": "expected 'Mitchell Admin'",
+    "answer": "**Mitchell Admin** owns the most active leads, with **18** active leads (total expected revenue: $240,187)."
+  },
+  {
+    "id": "p01",
+    "category": "process",
+    "tools": [
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 79.07,
+    "in": 1974,
+    "out": 52,
+    "note": "The assistant correctly identified that the sales manager must approve the refund and included the correct reasoning from the reference answer.",
+    "answer": "A refund of 700 EUR must be approved by the **sales manager** (refunds above 500 EUR require sales manager approval)."
+  },
+  {
+    "id": "p02",
+    "category": "process",
+    "tools": [
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 22.09,
+    "in": 1971,
+    "out": 39,
+    "note": "The assistant correctly states the refund period as 30 days from the invoice date, matching the reference answer.",
+    "answer": "Customers have **30 days** from the invoice date to request a full refund."
+  },
+  {
+    "id": "p03",
+    "category": "process",
+    "tools": [
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 21.18,
+    "in": 2122,
+    "out": 57,
+    "note": "The assistant correctly identified that the sales manager approves a 15% discount, matching the reference answer's threshold.",
+    "answer": "A 15% discount on a quotation must be approved by the **Sales manager** (discounts between 10% and 20% require sales manager approval)."
+  },
+  {
+    "id": "p04",
+    "category": "process",
+    "tools": [
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 16.69,
+    "in": 2001,
+    "out": 97,
+    "note": "The assistant correctly identifies all pipeline stages and provides the exact definition for 'Qualified' as stated in the reference answer, while adding valid extra detail.",
+    "answer": "Based on the sales process documentation, the pipeline stages and their meanings are:\n\n* **New**: Lead captured, not yet contacted.\n* **Qualified**: Budget, need, and decision-maker confirmed. (Definition: A discovery call has been completed).\n* **Proposition**: A quotation has been sent.\n* **Won**: Quotation confirmed as a sales order."
+  },
+  {
+    "id": "p05",
+    "category": "process",
+    "tools": [
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 17.38,
+    "in": 1892,
+    "out": 60,
+    "note": "The assistant correctly identified the Enterprise team and included the threshold of more than 250 employees.",
+    "answer": "A new lead from a company with 500 employees goes to the **Enterprise team** (since companies with more than 250 employees are routed there)."
+  },
+  {
+    "id": "p06",
+    "category": "process",
+    "tools": [
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 15.89,
+    "in": 2118,
+    "out": 36,
+    "note": "The assistant correctly stated that quotations are valid for 30 days by default.",
+    "answer": "Quotations are valid for **30 days** by default."
+  },
+  {
+    "id": "p07",
+    "category": "process",
+    "tools": [
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 17.05,
+    "in": 2080,
+    "out": 39,
+    "note": "The assistant correctly states that the linked opportunity moves to the Won stage when a sales order is confirmed.",
+    "answer": "Confirming a sales order automatically moves the linked opportunity to the **Won** stage."
+  },
+  {
+    "id": "m01",
+    "category": "multi",
+    "tools": [
+      "search_leads",
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 15.71,
+    "in": 2842,
+    "out": 72,
+    "note": "The assistant accurately states both the number of leads in the Qualified stage and their default win probability as provided in the reference answer.",
+    "answer": "There are **13** leads in the Qualified stage. \n\nAccording to the sales pipeline documentation, the default win probability for the Qualified stage is **30%**."
+  },
+  {
+    "id": "m02",
+    "category": "multi",
+    "tools": [
+      "search_sales_orders",
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 17.35,
+    "in": 2375,
+    "out": 90,
+    "note": "The assistant correctly identified that there are 4 draft quotations and that a 25% discount requires approval from the sales director.",
+    "answer": "There are **4** draft quotations in total (worth 6,290.51).\n\nAccording to the discount approval policy, a **25% discount** (which is above 20%) must be approved by the **Sales director**."
+  },
+  {
+    "id": "m03",
+    "category": "multi",
+    "tools": [
+      "get_pipeline_summary",
+      "search_process_docs"
+    ],
+    "tool_ok": true,
+    "answer_ok": true,
+    "latency_s": 16.18,
+    "in": 2057,
+    "out": 107,
+    "note": "The assistant correctly identified both the expected revenue in the New stage and the correct team for a 100-employee company.",
+    "answer": "- Total expected revenue in the New stage: **$115,475** (across 13 leads).\n- According to the lead routing policy, leads from a company with 100 employees (250 employees or fewer) are handled by the **SMB team**."
+  },
+  {
+    "id": "m04",
+    "category": "multi",
+    "tools": [
+      "get_customer_profile",
+      "search_process_docs"
+    ],
+    "tool_ok": false,
+    "answer_ok": false,
+    "latency_s": 15.27,
+    "in": 2635,
+    "out": 113,
+    "note": "The assistant stated there are 10 sales orders, whereas the reference answer states there are 13.",
+    "answer": "Gemini Furniture has **10** sales orders. \n\nAccording to company refund policy, customers may request a full refund within **30 days** of the invoice date (refunds between day 31 and day 60 are issued as credit notes only, and no refunds are permitted after 60 days except for proven product defects)."
+  }
+]

@@ -65,21 +65,32 @@ use no tool outside the acceptable sets. Numbers use exact match (0.5 tolerance 
 
 ### Results
 
+Single run on 2026-10-22, `gemini-3.5-flash-lite` (free tier) as both agent and judge, against the Odoo 17 demo data. Full per-question detail is in [`evals/REPORT.md`](evals/REPORT.md).
+
 | Metric | Result |
 |---|---|
-| Tool-selection accuracy | _not yet run_ |
-| Answer correctness | _not yet run_ |
-| Latency p50 / p95 | _not yet run_ |
-| Avg tokens / question | _not yet run_ |
+| Tool-selection accuracy | 95% (20/21) |
+| Answer correctness | 95% (20/21) |
+| Latency p50 / p95 | 19.1s / 24.2s |
+| Avg tokens / question (in + out) | 2192 + 54 |
 
-Run `python -m evals.run` and paste the table from `evals/REPORT.md`.
+| Category | n | Tool selection | Answer correct |
+|---|---|---|---|
+| data | 10 | 10/10 | 10/10 |
+| process | 7 | 7/7 | 7/7 |
+| multi-step | 4 | 3/4 | 3/4 |
+
+**The one failure (m04):** asked how many orders Gemini Furniture has (13), the agent called `get_customer_profile`
+instead of `search_sales_orders`. The profile tool returns only the 10 latest orders, so the answer was 10. This is a real
+tool-design weakness: the profile tool should return the total order count, or its docstring should say it is capped.
+Latency is dominated by free-tier rate limiting (about 9s per model call), not by Odoo or retrieval.
 
 ## Limitations
 
 - Read-only by design; it cannot create or update records.
 - Date filters use Odoo's stored UTC timestamps; no timezone handling.
 - List tools cap at 25 rows (the total count is still exact); `get_customer_profile` uses the first name match and 10 latest orders.
-- The question set is small (21) and the judge is an LLM, so scores are indicative, not statistically robust. The judge may share the agent's model family.
+- The question set is small (21), results come from a single run, and the judge is an LLM (here the same model as the agent), so scores are indicative, not statistically robust.
 - No conversation memory: each question is independent.
 - RAG is top-3 dense retrieval with heading-level chunks, with no reranking. The docs are short, synthetic samples.
 - Odoo credentials default to the demo `admin/admin`; do not reuse this setup against a real instance.
