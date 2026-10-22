@@ -75,21 +75,21 @@ Single run on 2026-10-22, `gemini-3.5-flash-lite` (free tier) as both agent and 
 
 | Metric | Result |
 |---|---|
-| Tool-selection accuracy | 95% (20/21) |
-| Answer correctness | 95% (20/21) |
-| Latency p50 / p95 | 19.1s / 24.2s |
-| Avg tokens / question (in + out) | 2192 + 54 |
+| Tool-selection accuracy | 100% (21/21) |
+| Answer correctness | 100% (21/21) |
+| Latency p50 / p95 | 19.9s / 63.4s |
+| Avg tokens / question (in + out) | 2212 + 60 |
 
 | Category | n | Tool selection | Answer correct |
 |---|---|---|---|
 | data | 10 | 10/10 | 10/10 |
 | process | 7 | 7/7 | 7/7 |
-| multi-step | 4 | 3/4 | 3/4 |
+| multi-step | 4 | 4/4 | 4/4 |
 
-**The one failure (m04):** asked how many orders Gemini Furniture has (13), the agent called `get_customer_profile`, which
-then returned only the 10 latest orders, so the answer was 10. Fixed afterwards: the profile tool now returns an exact
-`order_count` (not re-run in the eval yet, so the table above is from before the fix).
-Latency is dominated by free-tier rate limiting (about 9s per model call), not by Odoo or retrieval.
+An earlier run scored 20/21: the one miss (m04, Gemini Furniture's order count) came from `get_customer_profile` returning only
+the 10 latest orders. I fixed the tool to return an exact `order_count` and re-ran. Because the fix was made after seeing that
+failure, and the question set is small, treat 100% as "no known failures", not as a robust accuracy estimate.
+Latency is dominated by free-tier rate limiting and retries (about 9s per model call, with spikes), not by Odoo or retrieval.
 
 ## Limitations
 
