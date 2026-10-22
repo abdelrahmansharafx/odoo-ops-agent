@@ -1,39 +1,69 @@
+import json
 import logging
 import threading
+import time
 
 import requests
-from markupsafe import Markup, escape
+
+import psycopg2.errors
 
 from odoo import SUPERUSER_ID, api, models
 from odoo.modules.registry import Registry
 from odoo.tools import html2plaintext
+
+from .rendering import answer_html, error_html, status_html
 
 _logger = logging.getLogger(__name__)
 
 DEFAULT_AGENT_URL = "http://agent:8000"
 
 
-def _agent_reply(url, question):
-    """Ask the agent service; always returns HTML to post (a friendly error on failure)."""
+def _in_env(dbname, fn):
+    """Run fn(env) in its own committed transaction, so every update is visible to the chat right away."""
+    for attempt in range(4):  # concurrent chat updates can occasionally conflict; just retry
+        try:
+            with Registry(dbname).cursor() as cr:
+                return fn(api.Environment(cr, SUPERUSER_ID, {}))
+        except psycopg2.errors.SerializationFailure:
+            if attempt == 3:
+                raise
+            time.sleep(0.4 * (attempt + 1))
+
+
+def _stream_answer(dbname, channel_id, bot_partner_id, url, question):
+    """Background thread: post a live status message, update it as the agent works, then show the answer."""
+    steps = [{"stage": "gemini", "label": "Reading your question"}]
+    message_id = _in_env(dbname, lambda env: env["discuss.channel"].browse(channel_id).message_post(
+        body=status_html(steps), author_id=bot_partner_id, message_type="comment",
+        subtype_xmlid="mail.mt_comment").id)
+
+    def show(body):
+        _in_env(dbname, lambda env: env["discuss.channel"].browse(channel_id)._message_update_content(
+            env["mail.message"].browse(message_id), body, strict=False))
+
     try:
-        resp = requests.post(f"{url.rstrip('/')}/ask", json={"question": question}, timeout=180)
-        resp.raise_for_status()
-        data = resp.json()
-        footer = f'<br/><small style="opacity:.6">{escape(", ".join(data["tools"]) or "no tools")} · {data["latency_s"]}s</small>'
-        return Markup(data["answer_html"]) + Markup(footer)
-    except requests.RequestException as exc:
+        with requests.post(f"{url.rstrip('/')}/ask/stream", json={"question": question},
+                           stream=True, timeout=(10, 180)) as resp:
+            resp.raise_for_status()
+            final = None
+            for line in resp.iter_lines():
+                if not line:
+                    continue
+                event = json.loads(line)
+                if event["type"] == "status":
+                    if steps[-1]["label"] != event["label"]:
+                        steps.append(event)
+                        show(status_html(steps))
+                elif event["type"] == "result":
+                    final = event
+                elif event["type"] == "error":
+                    raise RuntimeError(event["detail"])
+        if final is None:
+            raise RuntimeError("the agent returned no answer")
+        show(answer_html(final))
+    except (requests.RequestException, RuntimeError, ValueError) as exc:
         _logger.warning("agent call failed: %s", exc)
-        return Markup("<p>Sorry, I couldn't reach the agent service. Please try again in a moment.</p>")
-
-
-def _post_reply(dbname, channel_id, bot_partner_id, url, question):
-    """Runs in a background thread so the user's message post returns immediately."""
-    body = _agent_reply(url, question)
-    with Registry(dbname).cursor() as cr:
-        env = api.Environment(cr, SUPERUSER_ID, {})
-        env["discuss.channel"].browse(channel_id).message_post(
-            body=body, author_id=bot_partner_id, message_type="comment", subtype_xmlid="mail.mt_comment",
-        )
+        show(error_html("Sorry, I couldn't get an answer from the agent. Please try again in a moment."))
 
 
 class MailThread(models.AbstractModel):
@@ -56,8 +86,7 @@ class MailThread(models.AbstractModel):
         if not question:
             return
         url = self.env["ir.config_parameter"].sudo().get_param("agent_chat.url", DEFAULT_AGENT_URL)
-        threading.Thread(
-            target=_post_reply,
-            args=(self.env.cr.dbname, self.id, bot_partner.id, url, question),
-            daemon=True,
-        ).start()
+        args = (self.env.cr.dbname, self.id, bot_partner.id, url, question)
+        # Only start once the user's own message is committed; writing the bot's reply while that
+        # transaction is still open conflicts on the chat-member row.
+        self.env.cr.postcommit.add(lambda: threading.Thread(target=_stream_answer, args=args, daemon=True).start())

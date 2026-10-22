@@ -26,7 +26,7 @@ flowchart LR
 - `odoo_agent/tools.py`: typed LangChain tools with docstrings the model reads.
 - `odoo_agent/rag.py`: chunks `docs/*.md` by heading, indexes into Chroma (default local ONNX embedder, so no embedding API key).
 - `odoo_agent/agent.py`: graph with a step guard (`MAX_STEPS=6`); at the limit the final node forces an answer from what was gathered. Returns the tools called, steps, tokens and latency.
-- `odoo_agent/api.py` + `odoo_addons/agent_chat/`: FastAPI wrapper (returns the answer as markdown and as HTML) and an Odoo 17 addon that adds a **Business Agent** contact to Odoo's native chat. A message sent to it is answered in a background thread (so the chat doesn't freeze) via the `agent` container and posted back as a formatted message.
+- `odoo_agent/api.py` + `odoo_addons/agent_chat/`: FastAPI wrapper (returns the answer as markdown and as HTML) and an Odoo 17 addon that adds a **Business Agent** contact to Odoo's native chat. A message sent to it is answered in a background thread (so the chat doesn't freeze) via the streaming `/ask/stream` endpoint of the `agent` container. The bot posts a live status message (asking the model, searching docs via RAG, querying Odoo) that turns into the final formatted answer with chips for the model, the RAG documents retrieved, the Odoo tools called and the time.
 - `evals/`: 21 questions, scoring and a report generator.
 
 ## Setup
@@ -98,7 +98,7 @@ Latency is dominated by free-tier rate limiting and retries (about 9s per model 
 - List tools cap at 25 rows (the total count is still exact); `get_customer_profile` uses the first name match and lists the 10 latest orders (the order count is exact).
 - The question set is small (21), results come from a single run, and the judge is an LLM (here the same model as the agent), so scores are indicative, not statistically robust.
 - The Odoo chat contact queries Odoo as the `.env` user (demo `admin`), not as the logged-in Odoo user, so every user sees the same data. It would need per-user credentials before any real use.
-- The addon has no automated tests; it was checked manually. There is no typing indicator while the agent works (about 15s on the free Gemini tier).
+- The addon has no automated tests; it was checked manually. The RAG chips list the documents *retrieved* (top 3), not necessarily every document the model relied on.
 - No conversation memory: each question is independent.
 - RAG is top-3 dense retrieval with heading-level chunks, with no reranking. The docs are short, synthetic samples.
 - Odoo credentials default to the demo `admin/admin`; do not reuse this setup against a real instance.
