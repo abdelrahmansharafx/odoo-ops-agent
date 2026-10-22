@@ -1,0 +1,47 @@
+# Odoo 17 + Postgres with demo data (crm, sales, contacts). Demo data only; no real client data.
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 5s
+      retries: 10
+
+  # One-shot: creates the "odoo" database and installs modules WITH demo data, then exits.
+  odoo-init:
+    image: odoo:17.0
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: &odoo_env
+      HOST: db
+      USER: odoo
+      PASSWORD: odoo
+    command: >
+      odoo -d odoo -i base,contacts,crm,sale_management
+      --stop-after-init --without-demo=False
+    volumes:
+      - odoo-data:/var/lib/odoo
+    restart: "no"
+
+  odoo:
+    image: odoo:17.0
+    depends_on:
+      odoo-init:
+        condition: service_completed_successfully
+    ports:
+      - "8069:8069"
+    environment: *odoo_env
+    command: odoo -d odoo --db-filter=^odoo$$
+    volumes:
+      - odoo-data:/var/lib/odoo
+
+volumes:
+  pgdata:
+  odoo-data:
