@@ -112,15 +112,22 @@ def main() -> None:
     results = []
     for q in load_questions(args.ids):
         value = resolve_truth(client, q["truth"]) if "truth" in q else None
-        res = ask(q["question"])
-        ok, note = grade(q, value, res.answer, judge_llm)
-        results.append({
-            "id": q["id"], "category": q["category"], "tools": res.tools_called,
-            "tool_ok": tool_selection_ok(res.tools_called, q["expected_tools"]), "answer_ok": ok,
-            "latency_s": res.latency_s, "in": res.input_tokens, "out": res.output_tokens, "note": note,
-            "answer": res.answer,
-        })
-        print(f"{q['id']}: tools={'OK' if results[-1]['tool_ok'] else 'WRONG'} answer={'OK' if ok else 'WRONG'} ({res.latency_s}s)")
+        try:
+            res = ask(q["question"])
+            ok, note = grade(q, value, res.answer, judge_llm)
+            results.append({
+                "id": q["id"], "category": q["category"], "tools": res.tools_called,
+                "tool_ok": tool_selection_ok(res.tools_called, q["expected_tools"]), "answer_ok": ok,
+                "latency_s": res.latency_s, "in": res.input_tokens, "out": res.output_tokens, "note": note,
+                "answer": res.answer,
+            })
+        except Exception as exc:  # e.g. provider outage after retries: score as a failure, keep going
+            results.append({
+                "id": q["id"], "category": q["category"], "tools": [], "tool_ok": False, "answer_ok": False,
+                "latency_s": 0.0, "in": 0, "out": 0, "note": f"ERROR {type(exc).__name__}: {exc}"[:200], "answer": "",
+            })
+        r = results[-1]
+        print(f"{q['id']}: tools={'OK' if r['tool_ok'] else 'WRONG'} answer={'OK' if r['answer_ok'] else 'WRONG'} ({r['latency_s']}s)")
 
     args.out.write_text(render_report(results, resolve_provider()))
     raw = args.out.with_suffix(".json")

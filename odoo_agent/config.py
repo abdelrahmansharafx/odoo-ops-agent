@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_MODELS = {"anthropic": "claude-sonnet-5-5", "openai": "gpt-4o-mini", "gemini": "gemini-2.0-flash"}
+DEFAULT_MODELS = {"anthropic": "claude-sonnet-5-5", "openai": "gpt-4o-mini", "gemini": "gemini-3.8-flash"}
 
 
 def resolve_provider() -> str:
@@ -34,15 +34,15 @@ def get_llm(model_env: str = "LLM_MODEL", temperature: float = 0):
     if provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
 
-        return ChatAnthropic(model=model, temperature=temperature, max_tokens=2048)
+        return ChatAnthropic(model=model, temperature=temperature, max_tokens=2048, max_retries=5)
     if provider == "gemini":
         from langchain_google_genai import ChatGoogleGenerativeAI
 
         key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        return ChatGoogleGenerativeAI(model=model, temperature=temperature, google_api_key=key)
+        return ChatGoogleGenerativeAI(model=model, temperature=temperature, google_api_key=key, max_retries=5)
     from langchain_openai import ChatOpenAI
 
-    return ChatOpenAI(model=model, temperature=temperature)
+    return ChatOpenAI(model=model, temperature=temperature, max_retries=5)
 
 
 def setup_logging() -> None:
