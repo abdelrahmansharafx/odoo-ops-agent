@@ -43,7 +43,8 @@ streamlit run streamlit_app.py
 ```
 
 `docker compose up -d --build` also starts the `agent` API (port 8000) and installs the **Agent Chat** addon. Log in to Odoo
-(http://localhost:8069, admin/admin) and open **Business Agent** under Direct Messages in Discuss (or the messaging menu in the top bar).
+(http://localhost:8069, admin/admin), then click the gradient **sparkle icon** in the top bar to open the Business Agent chat
+(or find it under Direct Messages in Discuss). While it works the chat shows an animated "Thinking"; the answer comes with coloured tags for the model, RAG documents, Odoo tools and time.
 The init step is idempotent: demo data is installed once; later runs only update the addon.
 
 Provider: whichever key is present (Anthropic, then OpenAI, then Gemini); force one with `LLM_PROVIDER`, override the model with `LLM_MODEL`.
@@ -98,7 +99,7 @@ Latency is dominated by free-tier rate limiting and retries (about 9s per model 
 - List tools cap at 25 rows (the total count is still exact); `get_customer_profile` uses the first name match and lists the 10 latest orders (the order count is exact).
 - The question set is small (21), results come from a single run, and the judge is an LLM (here the same model as the agent), so scores are indicative, not statistically robust.
 - The Odoo chat contact queries Odoo as the `.env` user (demo `admin`), not as the logged-in Odoo user, so every user sees the same data. It would need per-user credentials before any real use.
-- The addon has no automated tests; it was checked manually. The RAG chips list the documents *retrieved* (top 3), not necessarily every document the model relied on.
+- The addon's Python rendering is unit-tested, but its JavaScript (the top-bar icon) has no automated tests. The RAG chips list the documents *retrieved* (top 3), not necessarily every document the model relied on.
 - No conversation memory: each question is independent.
 - RAG is top-3 dense retrieval with heading-level chunks, with no reranking. The docs are short, synthetic samples.
 - Odoo credentials default to the demo `admin/admin`; do not reuse this setup against a real instance.

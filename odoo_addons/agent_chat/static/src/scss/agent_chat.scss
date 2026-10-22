@@ -36,3 +36,28 @@
     50% { content: ".."; }
     75% { content: "..."; }
 }
+
+// Top-bar AI icon
+.o_agent_ai_systray {
+    .o_agent_ai_btn {
+        display: flex;
+        align-items: center;
+        padding: 0 .6rem;
+        height: 100%;
+        border: 0;
+        background: transparent;
+        // white tile behind the gradient sparkle so it stays visible on any navbar colour
+        .o_agent_ai_icon {
+            padding: 3px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .92);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        &:hover .o_agent_ai_icon {
+            transform: scale(1.08);
+            box-shadow: 0 0 10px rgba(155, 114, 203, .8);
+        }
+    }
+}
