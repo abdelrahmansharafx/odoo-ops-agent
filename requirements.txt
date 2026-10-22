@@ -6,3 +6,4 @@ python-dotenv>=1.0
 streamlit>=1.38
 pytest>=8.0
 chromadb>=0.5
+langchain-google-genai>=2.0

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_MODELS = {"anthropic": "claude-sonnet-5-5", "openai": "gpt-4o-mini"}
+DEFAULT_MODELS = {"anthropic": "claude-sonnet-5-5", "openai": "gpt-4o-mini", "gemini": "gemini-2.0-flash"}
 
 
 def resolve_provider() -> str:
@@ -22,7 +22,9 @@ def resolve_provider() -> str:
         return "anthropic"
     if os.getenv("OPENAI_API_KEY"):
         return "openai"
-    raise RuntimeError("No LLM key found: set ANTHROPIC_API_KEY or OPENAI_API_KEY in .env")
+    if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
+        return "gemini"
+    raise RuntimeError("No LLM key found: set ANTHROPIC_API_KEY, OPENAI_API_KEY or GEMINI_API_KEY in .env")
 
 
 def get_llm(model_env: str = "LLM_MODEL", temperature: float = 0):
@@ -33,6 +35,11 @@ def get_llm(model_env: str = "LLM_MODEL", temperature: float = 0):
         from langchain_anthropic import ChatAnthropic
 
         return ChatAnthropic(model=model, temperature=temperature, max_tokens=2048)
+    if provider == "gemini":
+        from langchain_google_genai import ChatGoogleGenerativeAI
+
+        key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        return ChatGoogleGenerativeAI(model=model, temperature=temperature, google_api_key=key)
     from langchain_openai import ChatOpenAI
 
     return ChatOpenAI(model=model, temperature=temperature)

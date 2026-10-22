@@ -40,7 +40,7 @@ python -m odoo_agent "how many leads are in qualified stage?"
 streamlit run streamlit_app.py
 ```
 
-Provider: whichever key is present (Anthropic first); force one with `LLM_PROVIDER`, override the model with `LLM_MODEL`.
+Provider: whichever key is present (Anthropic, then OpenAI, then Gemini); force one with `LLM_PROVIDER`, override the model with `LLM_MODEL`.
 The first RAG query downloads Chroma's small embedding model (~80 MB) once. Add `-v` to the CLI to log every step.
 
 ## Example questions
