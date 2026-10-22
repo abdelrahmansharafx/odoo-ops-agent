@@ -5,6 +5,7 @@
     "category": "Productivity",
     "depends": ["mail", "crm", "sale_management"],
     "data": ["data/bot_data.xml"],
+    "assets": {"web.assets_backend": ["agent_chat/static/src/scss/agent_chat.scss"]},
     "license": "LGPL-3",
     "installable": True,
 }

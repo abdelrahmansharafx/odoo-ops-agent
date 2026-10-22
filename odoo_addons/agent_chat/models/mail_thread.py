@@ -11,7 +11,7 @@ from odoo import SUPERUSER_ID, api, models
 from odoo.modules.registry import Registry
 from odoo.tools import html2plaintext
 
-from .rendering import answer_html, error_html, status_html
+from .rendering import answer_html, error_html, thinking_html
 
 _logger = logging.getLogger(__name__)
 
@@ -31,10 +31,9 @@ def _in_env(dbname, fn):
 
 
 def _stream_answer(dbname, channel_id, bot_partner_id, url, question):
-    """Background thread: post a live status message, update it as the agent works, then show the answer."""
-    steps = [{"stage": "gemini", "label": "Reading your question"}]
+    """Background thread: post an animated "Thinking" message, then replace it with the answer."""
     message_id = _in_env(dbname, lambda env: env["discuss.channel"].browse(channel_id).message_post(
-        body=status_html(steps), author_id=bot_partner_id, message_type="comment",
+        body=thinking_html(), author_id=bot_partner_id, message_type="comment",
         subtype_xmlid="mail.mt_comment").id)
 
     def show(body):
@@ -50,11 +49,7 @@ def _stream_answer(dbname, channel_id, bot_partner_id, url, question):
                 if not line:
                     continue
                 event = json.loads(line)
-                if event["type"] == "status":
-                    if steps[-1]["label"] != event["label"]:
-                        steps.append(event)
-                        show(status_html(steps))
-                elif event["type"] == "result":
+                if event["type"] == "result":  # "status" events are ignored: the UI just says Thinking
                     final = event
                 elif event["type"] == "error":
                     raise RuntimeError(event["detail"])

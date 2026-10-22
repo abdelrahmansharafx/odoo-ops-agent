@@ -7,13 +7,9 @@ rendering = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rendering)
 
 
-def test_status_marks_finished_and_active_steps():
-    html = str(rendering.status_html([
-        {"stage": "gemini", "label": "Asking Gemini (m)"},
-        {"stage": "rag", "label": "Searching process docs (RAG)"},
-    ]))
-    assert html.index("✅") < html.index("⏳")
-    assert "Searching process docs (RAG)…" in html and "Asking Gemini (m)…" not in html
+def test_thinking_uses_animated_class_and_minimal_text():
+    html = str(rendering.thinking_html())
+    assert 'class="o_agent_thinking"' in html and ">Thinking<" in html
 
 
 def test_answer_has_chips_for_model_rag_odoo_and_time():
@@ -22,6 +18,9 @@ def test_answer_has_chips_for_model_rag_odoo_and_time():
     html = str(rendering.answer_html(data))
     assert html.startswith("<p>13</p>")
     assert "Gemini · m" in html and "RAG · refund-policy.md" in html and "14.3s" in html
+    assert not any(icon in html for icon in "✨📚🗄⏱")  # coloured tags, no icons
+    assert "background-color:rgba(66,133,244" in html
+    assert "color:#1a56db" in html and "color:#137333" in html and "color:#714b67" in html
     assert html.count("Odoo · search_leads") == 1 and "Odoo · search_process_docs" not in html
 
 
@@ -32,4 +31,3 @@ def test_answer_without_rag_has_no_rag_chip():
 
 def test_values_are_escaped():
     assert "<script>" not in str(rendering.error_html("<script>x</script>"))
-    assert "<script>" not in str(rendering.status_html([{"stage": "odoo", "label": "<script>x</script>"}]))
