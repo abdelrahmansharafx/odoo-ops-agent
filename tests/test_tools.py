@@ -88,6 +88,17 @@ def test_customer_profile_found(client):
     assert out["open_leads"][0]["stage"] == "New" and out["orders"][0]["order"] == "S1"
 
 
+def test_customer_profile_order_count_is_exact_beyond_listed_rows(client):
+    orders = [{"name": f"S{i}", "state": "sale", "amount_total": 1, "date_order": "d"} for i in range(13)]
+    client.search_read.side_effect = [
+        [{"id": 9, "name": "Acme", "email": False, "phone": False, "city": False, "country_id": False, "is_company": True}],
+        [],
+        orders,
+    ]
+    out = tools.get_customer_profile.invoke({"name": "acme"})
+    assert out["order_count"] == 13 and len(out["orders"]) == 10
+
+
 def test_customer_profile_not_found(client):
     client.search_read.return_value = []
     assert tools.get_customer_profile.invoke({"name": "nobody"}) == {"found": False, "name": "nobody"}

@@ -158,7 +158,7 @@ def search_sales_orders(
 
 @tool
 def get_customer_profile(name: str) -> dict:
-    """Get a customer's contact details, their open leads and their sales orders.
+    """Get a customer's contact details, open leads and sales orders (exact order_count plus the 10 latest).
 
     Args:
         name: Customer/company name, partial match (the first match is used).
@@ -184,7 +184,6 @@ def get_customer_profile(name: str) -> dict:
         [("partner_id", "=", p["id"])],
         ["name", "state", "amount_total", "date_order"],
         order="date_order desc",
-        limit=10,
     )
     return {
         "found": True,
@@ -200,9 +199,10 @@ def get_customer_profile(name: str) -> dict:
             {"name": l["name"], "stage": _name(l["stage_id"]), "expected_revenue": l["expected_revenue"]}
             for l in leads
         ],
+        "order_count": len(orders),  # exact total; `orders` below lists only the latest 10
         "orders": [
             {"order": o["name"], "state": o["state"], "amount_total": o["amount_total"], "date": o["date_order"]}
-            for o in orders
+            for o in orders[:10]
         ],
     }
 

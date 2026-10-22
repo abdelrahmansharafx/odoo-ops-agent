@@ -86,16 +86,16 @@ Single run on 2026-10-22, `gemini-3.5-flash-lite` (free tier) as both agent and 
 | process | 7 | 7/7 | 7/7 |
 | multi-step | 4 | 3/4 | 3/4 |
 
-**The one failure (m04):** asked how many orders Gemini Furniture has (13), the agent called `get_customer_profile`
-instead of `search_sales_orders`. The profile tool returns only the 10 latest orders, so the answer was 10. This is a real
-tool-design weakness: the profile tool should return the total order count, or its docstring should say it is capped.
+**The one failure (m04):** asked how many orders Gemini Furniture has (13), the agent called `get_customer_profile`, which
+then returned only the 10 latest orders, so the answer was 10. Fixed afterwards: the profile tool now returns an exact
+`order_count` (not re-run in the eval yet, so the table above is from before the fix).
 Latency is dominated by free-tier rate limiting (about 9s per model call), not by Odoo or retrieval.
 
 ## Limitations
 
 - Read-only by design; it cannot create or update records.
 - Date filters use Odoo's stored UTC timestamps; no timezone handling.
-- List tools cap at 25 rows (the total count is still exact); `get_customer_profile` uses the first name match and 10 latest orders.
+- List tools cap at 25 rows (the total count is still exact); `get_customer_profile` uses the first name match and lists the 10 latest orders (the order count is exact).
 - The question set is small (21), results come from a single run, and the judge is an LLM (here the same model as the agent), so scores are indicative, not statistically robust.
 - The Odoo chat panel queries Odoo as the `.env` user (demo `admin`), not as the logged-in Odoo user, so every user sees the same data. It would need per-user credentials before any real use.
 - The addon has no automated tests; it was checked manually in the browser.
