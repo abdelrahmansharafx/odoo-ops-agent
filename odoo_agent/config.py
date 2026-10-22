@@ -34,15 +34,15 @@ def get_llm(model_env: str = "LLM_MODEL", temperature: float = 0):
     if provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
 
-        return ChatAnthropic(model=model, temperature=temperature, max_tokens=2048, max_retries=5)
+        return ChatAnthropic(model=model, temperature=temperature, max_tokens=2048, max_retries=5, timeout=90)
     if provider == "gemini":
         from langchain_google_genai import ChatGoogleGenerativeAI
 
         key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        return ChatGoogleGenerativeAI(model=model, temperature=temperature, google_api_key=key, max_retries=5)
+        return ChatGoogleGenerativeAI(model=model, temperature=temperature, google_api_key=key, max_retries=5, timeout=90)
     from langchain_openai import ChatOpenAI
 
-    return ChatOpenAI(model=model, temperature=temperature, max_retries=5)
+    return ChatOpenAI(model=model, temperature=temperature, max_retries=5, timeout=90)
 
 
 def setup_logging() -> None:

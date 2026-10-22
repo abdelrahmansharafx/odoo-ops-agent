@@ -99,6 +99,11 @@ def render_report(results: list[dict], provider: str) -> str:
     return "\n".join(lines)
 
 
+def save(out: Path, results: list[dict]) -> None:
+    out.write_text(render_report(results, resolve_provider()))
+    out.with_suffix(".json").write_text(json.dumps(results, indent=2))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--ids", nargs="*", help="only run these question ids")
@@ -129,9 +134,7 @@ def main() -> None:
         r = results[-1]
         print(f"{q['id']}: tools={'OK' if r['tool_ok'] else 'WRONG'} answer={'OK' if r['answer_ok'] else 'WRONG'} ({r['latency_s']}s)")
 
-    args.out.write_text(render_report(results, resolve_provider()))
-    raw = args.out.with_suffix(".json")
-    raw.write_text(json.dumps(results, indent=2))
+        save(args.out, results)  # incremental, so a hang or crash never loses finished questions
     print(f"\nReport written to {args.out}")
 
 

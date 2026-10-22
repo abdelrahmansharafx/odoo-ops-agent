@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 
+import markdown
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
@@ -20,6 +21,7 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     answer: str
+    answer_html: str  # markdown rendered to HTML for clients that can't render markdown (Odoo chat)
     tools: list[str]
     steps: int
     latency_s: float
@@ -37,4 +39,5 @@ def ask_endpoint(req: AskRequest) -> AskResponse:
     except Exception as exc:  # provider outage, Odoo down, bad key...
         log.exception("ask failed")
         raise HTTPException(status_code=502, detail=f"{type(exc).__name__}: {exc}"[:300]) from exc
-    return AskResponse(answer=r.answer, tools=r.tools_called, steps=r.steps, latency_s=r.latency_s)
+    html = markdown.markdown(r.answer, extensions=["extra", "sane_lists"])
+    return AskResponse(answer=r.answer, answer_html=html, tools=r.tools_called, steps=r.steps, latency_s=r.latency_s)

@@ -1,17 +1,10 @@
 {
     "name": "Agent Chat",
-    "summary": "Ask business questions to the LangGraph agent from the Odoo top bar",
-    "version": "17.0.1.0.0",
+    "summary": "A 'Business Agent' contact in Odoo's chat that answers business questions with a LangGraph agent",
+    "version": "17.0.2.0.0",
     "category": "Productivity",
-    "depends": ["web", "crm", "sale_management"],
-    "data": [],
-    "assets": {
-        "web.assets_backend": [
-            "agent_chat/static/src/js/agent_chat.js",
-            "agent_chat/static/src/xml/agent_chat.xml",
-            "agent_chat/static/src/scss/agent_chat.scss",
-        ],
-    },
+    "depends": ["mail", "crm", "sale_management"],
+    "data": ["data/bot_data.xml"],
     "license": "LGPL-3",
     "installable": True,
 }

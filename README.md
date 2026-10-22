@@ -9,7 +9,7 @@ All data is Odoo's synthetic demo data. Nothing here touches real client data.
 ```mermaid
 flowchart LR
     U[CLI / Streamlit] --> A
-    OD[Odoo chat panel<br/>agent_chat addon] -->|server-side HTTP| API[FastAPI /ask] --> A
+    OD[Odoo chat: Business Agent contact<br/>agent_chat addon] -->|server-side HTTP| API[FastAPI /ask] --> A
     subgraph Graph["LangGraph"]
         A[agent node<br/>LLM + tool routing] -->|tool calls & steps < max| T[tool node<br/>logs name, args, duration]
         T --> A
@@ -26,7 +26,7 @@ flowchart LR
 - `odoo_agent/tools.py`: typed LangChain tools with docstrings the model reads.
 - `odoo_agent/rag.py`: chunks `docs/*.md` by heading, indexes into Chroma (default local ONNX embedder, so no embedding API key).
 - `odoo_agent/agent.py`: graph with a step guard (`MAX_STEPS=6`); at the limit the final node forces an answer from what was gathered. Returns the tools called, steps, tokens and latency.
-- `odoo_agent/api.py` + `odoo_addons/agent_chat/`: HTTP wrapper and an Odoo 17 addon that adds a chat icon to the top bar. The addon's controller proxies questions to the `agent` container server-side, so the browser never talks to the agent directly.
+- `odoo_agent/api.py` + `odoo_addons/agent_chat/`: FastAPI wrapper (returns the answer as markdown and as HTML) and an Odoo 17 addon that adds a **Business Agent** contact to Odoo's native chat. A message sent to it is answered in a background thread (so the chat doesn't freeze) via the `agent` container and posted back as a formatted message.
 - `evals/`: 21 questions, scoring and a report generator.
 
 ## Setup
@@ -42,8 +42,8 @@ python -m odoo_agent "how many leads are in qualified stage?"
 streamlit run streamlit_app.py
 ```
 
-`docker compose up -d --build` also starts the `agent` API (port 8000) and installs the **Agent Chat** addon, so after logging in to Odoo
-(http://localhost:8069, admin/admin) click the speech-bubble icon in the top bar to ask questions inside Odoo.
+`docker compose up -d --build` also starts the `agent` API (port 8000) and installs the **Agent Chat** addon. Log in to Odoo
+(http://localhost:8069, admin/admin) and open **Business Agent** under Direct Messages in Discuss (or the messaging menu in the top bar).
 The init step is idempotent: demo data is installed once; later runs only update the addon.
 
 Provider: whichever key is present (Anthropic, then OpenAI, then Gemini); force one with `LLM_PROVIDER`, override the model with `LLM_MODEL`.
@@ -97,8 +97,8 @@ Latency is dominated by free-tier rate limiting (about 9s per model call), not b
 - Date filters use Odoo's stored UTC timestamps; no timezone handling.
 - List tools cap at 25 rows (the total count is still exact); `get_customer_profile` uses the first name match and lists the 10 latest orders (the order count is exact).
 - The question set is small (21), results come from a single run, and the judge is an LLM (here the same model as the agent), so scores are indicative, not statistically robust.
-- The Odoo chat panel queries Odoo as the `.env` user (demo `admin`), not as the logged-in Odoo user, so every user sees the same data. It would need per-user credentials before any real use.
-- The addon has no automated tests; it was checked manually in the browser.
+- The Odoo chat contact queries Odoo as the `.env` user (demo `admin`), not as the logged-in Odoo user, so every user sees the same data. It would need per-user credentials before any real use.
+- The addon has no automated tests; it was checked manually. There is no typing indicator while the agent works (about 15s on the free Gemini tier).
 - No conversation memory: each question is independent.
 - RAG is top-3 dense retrieval with heading-level chunks, with no reranking. The docs are short, synthetic samples.
 - Odoo credentials default to the demo `admin/admin`; do not reuse this setup against a real instance.
